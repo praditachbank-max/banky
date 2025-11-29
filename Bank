@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio - Apple Style</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Import LINE Seed Sans TH -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lazywasabi/thai-web-fonts@7/fonts/LineSeedSansTH/LineSeedSansTH.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Line Seed Sans TH"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        apple: {
+                            bg: '#f5f5f7',
+                            darkBg: '#000000',
+                            card: '#ffffff',
+                            darkCard: '#1c1c1e',
+                            blue: '#0071e3',
+                            darkText: '#f5f5f7',
+                            lightText: '#1d1d1f'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background-color: #d1d1d1; border-radius: 20px; }
+        .dark ::-webkit-scrollbar-thumb { background-color: #424245; }
+        
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .dark .glass-nav {
+            background: rgba(0, 0, 0, 0.7);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* MagicUI Style Pixel Image */
+        .pixel-card-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #f3f4f6; /* fallback */
+        }
+        
+        /* The High Res Image (Behind) */
+        .pixel-card-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            /* Initially visible but maybe covered by pixels */
+        }
+
+        /* The Grid Overlay */
+        .pixel-grid-overlay {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: grid;
+            /* Transitions for the reveal effect */
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        /* Individual Pixel Blocks */
+        .pixel-block {
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        /* Interactivity: Hover the container -> Hide pixels to show HD image */
+        .pixel-card-container:hover .pixel-grid-overlay {
+            opacity: 0; 
+            pointer-events: none;
+        }
+
+        /* If user requested Grayscale Animation */
+        .pixel-grid-overlay.grayscale-mode .pixel-block {
+            filter: grayscale(100%);
+        }
+    </style>
+</head>
+<body class="bg-apple-bg text-apple-lightText dark:bg-apple-darkBg dark:text-apple-darkText transition-colors duration-500 antialiased font-sans">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <span class="text-xl font-bold tracking-tight hover:opacity-70 transition-opacity">Portfolio.</span>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8 text-sm font-medium">
+                        <a href="#about" class="hover:text-apple-blue transition-colors">ประวัติของฉัน</a>
+                        <a href="#experience" class="hover:text-apple-blue transition-colors">ประวัติการทำงาน</a>
+                        <a href="#portfolio" class="hover:text-apple-blue transition-colors">ผลงาน</a>
+                        <a href="#contact" class="hover:text-apple-blue transition-colors">ติดต่อ</a>
+                    </div>
+                </div>
+
+                <!-- Right Side Controls -->
+                <div class="flex items-center gap-4">
+                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors focus:outline-none">
+                        <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block text-yellow-400"></i>
+                    </button>
+                    <div class="-mr-2 flex md:hidden">
+                        <button id="mobile-menu-btn" class="p-2 rounded-md hover:text-apple-blue focus:outline-none">
+                            <i data-lucide="menu" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:hidden hidden bg-white/90 dark:bg-black/90 backdrop-blur-xl absolute w-full border-b border-gray-200 dark:border-gray-800" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 text-center">
+                <a href="#about" class="block px-3 py-4 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800">ประวัติของฉัน</a>
+                <a href="#experience" class="block px-3 py-4 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800">ประวัติการทำงาน</a>
+                <a href="#portfolio" class="block px-3 py-4 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800">ผลงาน</a>
+                <a href="#contact" class="block px-3 py-4 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-gray-800">ติดต่อ</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center justify-center pt-16 relative overflow-hidden">
+        <div class="text-center px-4 max-w-3xl mx-auto z-10 fade-in-up">
+            <div class="w-32 h-32 mx-auto mb-8 bg-gradient-to-tr from-blue-400 to-purple-500 rounded-full shadow-lg flex items-center justify-center text-4xl transform hover:scale-105 transition-transform duration-300">
+                hi👋
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">
+                สวัสดี, ผมชื่อ<br>ประดิทรรศณ์ เนียมผาสุข
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-500 dark:text-gray-400 font-light mb-10 max-w-2xl mx-auto leading-relaxed">
+                ผมเชื่อว่าการสื่อสารกับ AI ที่ดีจะช่วยให้เราควบคุมทุกอย่างได้<br>
+                ผู้เชี่ยวชาญด้าน Prompt Engineer
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#portfolio" class="px-8 py-3 bg-apple-blue text-white rounded-full font-bold hover:bg-blue-600 transition-all shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-1">
+                    ดูผลงานของฉัน
+                </a>
+                <a href="#contact" class="px-8 py-3 bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white rounded-full font-bold hover:bg-gray-300 dark:hover:bg-gray-700 transition-all">
+                    ติดต่อฉัน
+                </a>
+            </div>
+        </div>
+        
+        <!-- Background Decor -->
+        <div class="absolute top-1/4 left-1/4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob dark:opacity-10"></div>
+        <div class="absolute top-1/4 right-1/4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000 dark:opacity-10"></div>
+        <div class="absolute -bottom-8 left-1/3 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000 dark:opacity-10"></div>
+    </section>
+
+    <!-- 1. About Me -->
+    <section id="about" class="py-24 px-4 bg-white dark:bg-black transition-colors duration-500">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center">ประวัติของฉัน</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="bg-apple-bg dark:bg-apple-darkCard p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                    <h3 class="text-xl font-bold mb-4 text-apple-blue">ข้อมูลส่วนตัว</h3>
+                    <p class="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+                        จากประสบการณ์กว่า 6 ปี ในฐานะ Software Engineer ที่บริษัทระดับโลกอย่าง <strong>Google</strong> และ <strong>Facebook (Meta)</strong> สู่การเป็น <strong>Generative AI Specialist</strong> ที่ BIGBOT AI <br><br>
+                        ผมมุ่งมั่นที่จะนำเทคโนโลยีปัญญาประดิษฐ์มาประยุกต์ใช้เพื่อยกระดับศักยภาพขององค์กร และถ่ายทอดความรู้ผ่านการเป็นวิทยากรเพื่อเตรียมความพร้อมผู้คนสู่ยุค AI-First
+                    </p>
+                    <ul class="space-y-2 text-gray-600 dark:text-gray-400">
+                        <li class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4"></i> กรุงเทพมหานคร, ไทย</li>
+                        <li class="flex items-center gap-2"><i data-lucide="briefcase" class="w-4 h-4"></i> Ex-Google / Ex-Meta Engineer</li>
+                        <li class="flex items-center gap-2"><i data-lucide="languages" class="w-4 h-4"></i> ไทย (Native), อังกฤษ (Professional)</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-6">ทักษะและความเชี่ยวชาญ</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-bold">Generative AI & Prompt Engineering</span>
+                                <span class="text-gray-500">98%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"><div class="bg-apple-blue h-2.5 rounded-full" style="width: 98%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-bold">Public Speaking & Training</span>
+                                <span class="text-gray-500">95%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"><div class="bg-purple-500 h-2.5 rounded-full" style="width: 95%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-bold">Software Engineering (Global Standard)</span>
+                                <span class="text-gray-500">90%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"><div class="bg-orange-500 h-2.5 rounded-full" style="width: 90%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-bold">Tech Consultation & Strategy</span>
+                                <span class="text-gray-500">85%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700"><div class="bg-green-500 h-2.5 rounded-full" style="width: 85%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. Work History -->
+    <section id="experience" class="py-24 px-4 bg-apple-bg dark:bg-[#111] transition-colors duration-500">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center">ประวัติการทำงาน</h2>
+            <div class="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-300 group-[.is-active]:bg-apple-blue text-slate-500 group-[.is-active]:text-emerald-50 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                        <i data-lucide="mic" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white dark:bg-apple-darkCard p-6 rounded-3xl shadow-sm hover:shadow-lg transition-all border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center justify-between space-x-2 mb-1">
+                            <div class="font-bold text-slate-900 dark:text-white">Generative AI Specialist</div>
+                            <time class="font-medium text-apple-blue text-sm">2023 - ปัจจุบัน</time>
+                        </div>
+                        <div class="text-slate-500 dark:text-slate-400 text-sm mb-2">BIGBOT AI</div>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm">เชี่ยวชาญด้านการเป็นวิทยากร และการใช้งาน Generative AI เพื่อยกระดับองค์กร พัฒนาโซลูชัน AI และให้คำปรึกษาด้านเทคโนโลยีแห่งอนาคต</p>
+                    </div>
+                </div>
+                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-300 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 dark:bg-gray-700">
+                        <i data-lucide="facebook" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white dark:bg-apple-darkCard p-6 rounded-3xl shadow-sm hover:shadow-lg transition-all border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center justify-between space-x-2 mb-1">
+                            <div class="font-bold text-slate-900 dark:text-white">Software Engineer</div>
+                            <time class="font-medium text-gray-500 text-sm">2020 - 2023</time>
+                        </div>
+                        <div class="text-slate-500 dark:text-slate-400 text-sm mb-2">Facebook (Meta)</div>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm">ร่วมทีมพัฒนาฟีเจอร์หลักสำหรับแพลตฟอร์มโซเชียลมีเดียระดับโลก เน้นการปรับปรุง User Experience และ Scalability ของระบบ</p>
+                    </div>
+                </div>
+                <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-300 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 dark:bg-gray-700">
+                        <i data-lucide="chrome" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white dark:bg-apple-darkCard p-6 rounded-3xl shadow-sm hover:shadow-lg transition-all border border-gray-100 dark:border-gray-800">
+                        <div class="flex items-center justify-between space-x-2 mb-1">
+                            <div class="font-bold text-slate-900 dark:text-white">Developer</div>
+                            <time class="font-medium text-gray-500 text-sm">2017 - 2020</time>
+                        </div>
+                        <div class="text-slate-500 dark:text-slate-400 text-sm mb-2">Google Thailand</div>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm">ทำงานร่วมกับทีมวิศวกรระดับภูมิภาคในการพัฒนาผลิตภัณฑ์ Google Search และ Localization สำหรับผู้ใช้งานในประเทศไทย</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Portfolio / Projects (MagicUI Pixel Style) -->
+    <section id="portfolio" class="py-24 px-4 bg-white dark:bg-black transition-colors duration-500">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center">ผลงานและบริการ</h2>
+            <p class="text-center text-gray-500 mb-8 text-sm">Hover เพื่อเปิดดูรายละเอียด (MagicUI Style)</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Project Card 1: AI Training -->
+                <div class="group bg-apple-bg dark:bg-apple-darkCard rounded-[30px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 cursor-pointer border border-transparent dark:border-gray-800 transform hover:-translate-y-2">
+                    <!-- MagicUI Pixel Container -->
+                    <div class="h-48 pixel-card-container" 
+                         data-src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80" 
+                         data-rows="8" 
+                         data-cols="10"
+                         data-grayscale="true"> <!-- Added grayscale option -->
+                       <!-- Content injected by JS -->
+                    </div>
+                    
+                    <div class="p-8">
+                        <span class="text-xs font-bold text-apple-blue uppercase tracking-wider">Training & Workshop</span>
+                        <h3 class="text-2xl font-bold mt-2 mb-3 group-hover:text-apple-blue transition-colors">วิทยากรอบรมองค์กรและหน่วยงานรัฐ</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6 line-clamp-3">
+                            บรรยายให้ความรู้ด้าน AI และ Digital Transformation แก่หน่วยงานภาครัฐและเอกชนชั้นนำ เพื่อยกระดับทักษะบุคลากรสู่ยุค AI-First
+                        </p>
+                        <span class="inline-flex items-center text-sm font-bold text-apple-blue hover:underline">
+                            ดูรายละเอียด <i data-lucide="arrow-right" class="ml-1 w-4 h-4"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Project Card 2: AI Consultation -->
+                <div class="group bg-apple-bg dark:bg-apple-darkCard rounded-[30px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 cursor-pointer border border-transparent dark:border-gray-800 transform hover:-translate-y-2">
+                    <div class="h-48 pixel-card-container" 
+                         data-src="https://images.unsplash.com/photo-1553877606-3c662ec7f644?auto=format&fit=crop&w=800&q=80"
+                         data-rows="8" 
+                         data-cols="10"
+                         data-grayscale="true">
+                    </div>
+                    <div class="p-8">
+                        <span class="text-xs font-bold text-purple-500 uppercase tracking-wider">Business Consultation</span>
+                        <h3 class="text-2xl font-bold mt-2 mb-3 group-hover:text-purple-500 transition-colors">ที่ปรึกษาธุรกิจด้าน AI</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6 line-clamp-3">
+                            ให้คำปรึกษาเชิงกลยุทธ์ในการนำ Generative AI มาปรับใช้กับกระบวนการทางธุรกิจ เพื่อเพิ่มประสิทธิภาพ ลดต้นทุน และสร้างความได้เปรียบทางการแข่งขัน
+                        </p>
+                        <span class="inline-flex items-center text-sm font-bold text-purple-500 hover:underline">
+                            ดูรายละเอียด <i data-lucide="arrow-right" class="ml-1 w-4 h-4"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Project Card 3: On-site Speaking -->
+                <div class="group bg-apple-bg dark:bg-apple-darkCard rounded-[30px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 cursor-pointer border border-transparent dark:border-gray-800 transform hover:-translate-y-2">
+                    <div class="h-48 pixel-card-container" 
+                         data-src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=800&q=80"
+                         data-rows="8" 
+                         data-cols="10"
+                         data-grayscale="true">
+                    </div>
+                    <div class="p-8">
+                        <span class="text-xs font-bold text-orange-500 uppercase tracking-wider">Keynote & Events</span>
+                        <h3 class="text-2xl font-bold mt-2 mb-3 group-hover:text-orange-500 transition-colors">รับงานบรรยายนอกสถานที่</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6 line-clamp-3">
+                            บริการวิทยากรรับเชิญสำหรับงานอีเวนต์ งานสัมมนาระดับประเทศ และงานประชุมวิชาการ พร้อมเนื้อหาที่อัปเดตล่าสุดและปรับให้เข้ากับกลุ่มผู้ฟัง
+                        </p>
+                        <span class="inline-flex items-center text-sm font-bold text-orange-500 hover:underline">
+                            ดูรายละเอียด <i data-lucide="arrow-right" class="ml-1 w-4 h-4"></i>
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Contact -->
+    <section id="contact" class="py-24 px-4 bg-apple-bg dark:bg-[#111] transition-colors duration-500">
+        <div class="max-w-xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">ร่วมงานกันไหมครับ?</h2>
+            <p class="text-xl text-gray-600 dark:text-gray-400 mb-10">
+                หากคุณมีโปรเจกต์ที่น่าสนใจ หรือต้องการสอบถามข้อมูลเพิ่มเติม สามารถติดต่อผมได้ทันที
+            </p>
+            <div class="flex flex-col gap-4">
+                <a href="mailto:contact@example.com" class="flex items-center justify-center gap-3 p-4 bg-white dark:bg-apple-darkCard rounded-2xl shadow-sm hover:shadow-md transition-all hover:scale-105 border border-transparent dark:border-gray-800">
+                    <i data-lucide="mail" class="w-6 h-6 text-apple-blue"></i>
+                    <span class="font-bold text-lg">example@email.com</span>
+                </a>
+                <div class="flex gap-4 justify-center mt-4">
+                    <a href="#" class="p-4 bg-white dark:bg-apple-darkCard rounded-full shadow-sm hover:shadow-md transition-all hover:scale-110 hover:text-blue-600 dark:hover:text-blue-400">
+                        <i data-lucide="linkedin" class="w-6 h-6"></i>
+                    </a>
+                    <a href="#" class="p-4 bg-white dark:bg-apple-darkCard rounded-full shadow-sm hover:shadow-md transition-all hover:scale-110 hover:text-gray-900 dark:hover:text-white">
+                        <i data-lucide="github" class="w-6 h-6"></i>
+                    </a>
+                    <a href="#" class="p-4 bg-white dark:bg-apple-darkCard rounded-full shadow-sm hover:shadow-md transition-all hover:scale-110 hover:text-blue-400">
+                        <i data-lucide="twitter" class="w-6 h-6"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-8 text-center text-sm text-gray-500 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
+        <p>&copy; 2024 My Portfolio. Designed with Apple Style.</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+        
+        // --- Dark Mode & UI Logic ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            htmlElement.classList.add('dark');
+        } else {
+            htmlElement.classList.remove('dark');
+        }
+        themeToggleBtn.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            localStorage.setItem('theme', htmlElement.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        document.querySelectorAll('#mobile-menu a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+
+        // --- MAGICUI STYLE PIXEL LOGIC ---
+        class MagicPixelCard {
+            constructor(container) {
+                this.container = container;
+                this.src = container.dataset.src;
+                // Config from attributes or defaults (simulate user snippet: rows:4, cols:6)
+                // I increased defaults slightly for better visual, but logic follows the structure.
+                this.rows = parseInt(container.dataset.rows) || 8; 
+                this.cols = parseInt(container.dataset.cols) || 10;
+                this.isGrayscale = container.dataset.grayscale === "true";
+                
+                this.init();
+            }
+
+            async init() {
+                // 1. Create the BG Image (High Res) - Hidden initially by pixels
+                const img = new Image();
+                img.src = this.src;
+                img.className = "pixel-card-bg";
+                img.crossOrigin = "Anonymous"; // Important for canvas sampling
+                this.container.appendChild(img);
+
+                // Wait for load to sample colors
+                await new Promise(r => img.onload = r);
+
+                // 2. Create Grid Overlay
+                const gridOverlay = document.createElement('div');
+                gridOverlay.className = `pixel-grid-overlay ${this.isGrayscale ? 'grayscale-mode' : ''}`;
+                
+                // Set CSS Grid template
+                gridOverlay.style.gridTemplateColumns = `repeat(${this.cols}, 1fr)`;
+                gridOverlay.style.gridTemplateRows = `repeat(${this.rows}, 1fr)`;
+
+                // 3. Sample colors and create blocks
+                const colors = this.sampleColors(img, this.rows, this.cols);
+
+                colors.forEach((color, index) => {
+                    const block = document.createElement('div');
+                    block.className = 'pixel-block';
+                    block.style.backgroundColor = color;
+                    // Optional: Add slight transition delay for "wave" effect
+                    // block.style.transitionDelay = `${(index % this.cols) * 0.05}s`; 
+                    gridOverlay.appendChild(block);
+                });
+
+                this.container.appendChild(gridOverlay);
+            }
+
+            sampleColors(img, rows, cols) {
+                // Create offscreen canvas to read pixels
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = cols;
+                canvas.height = rows;
+
+                // Draw image resized to grid dimensions (browser handles averaging)
+                ctx.drawImage(img, 0, 0, cols, rows);
+                
+                const imgData = ctx.getImageData(0, 0, cols, rows).data;
+                const colors = [];
+
+                for (let i = 0; i < imgData.length; i += 4) {
+                    const r = imgData[i];
+                    const g = imgData[i + 1];
+                    const b = imgData[i + 2];
+                    // Alpha is ignored, assume solid
+                    colors.push(`rgb(${r},${g},${b})`);
+                }
+                return colors;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Observer for fade-in animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in-up');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('section > div').forEach(section => {
+                section.classList.add('opacity-0');
+                section.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+                observer.observe(section);
+            });
+
+            const style = document.createElement('style');
+            style.innerHTML = `.fade-in-up { opacity: 1 !important; transform: translateY(0) !important; } .opacity-0 { opacity: 0; transform: translateY(20px); }`;
+            document.head.appendChild(style);
+
+            // Init Pixel Cards
+            document.querySelectorAll('.pixel-card-container').forEach(el => new MagicPixelCard(el));
+        });
+    </script>
+</body>
+</html>
